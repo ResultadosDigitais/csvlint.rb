@@ -11,8 +11,8 @@ module Csvlint
       "Illegal quoting" => :whitespace,
       "Unclosed quoted field" => :unclosed_quote,
     }
-       
-    def initialize(source, dialect = nil, schema = nil, options = {})      
+
+    def initialize(source, dialect = nil, schema = nil, options = {})
       @source = source
       @formats = []
       @schema = schema
@@ -36,8 +36,8 @@ module Csvlint
     end
         
     def validate
-      single_col = false   
-      io = nil   
+      single_col = false
+      io = nil
       begin
         io = @source.respond_to?(:gets) ? @source : open(@source, :allow_redirections=>:all)
         validate_metadata(io)
@@ -125,9 +125,11 @@ module Csvlint
                build_formats(row)
                @col_counts << row.reject {|r| r.blank? }.size
                @expected_columns = row.size unless @expected_columns != 0
-               
-               build_errors(:blank_rows, :structure, current_line, nil, wrapper.line) if row.reject{ |c| c.nil? || c.empty? }.size == 0
-               
+
+               unless @csv_options[:skip_blanks]
+                 build_errors(:blank_rows, :structure, current_line, nil, wrapper.line) if row.reject{ |c| c.nil? || c.empty? }.size == 0
+               end
+
                if @schema
                  @schema.validate_row(row, current_line)
                  @errors += @schema.errors
@@ -187,11 +189,12 @@ module Csvlint
         skipinitialspace = dialect["skipInitialSpace"] || true
         delimiter = dialect["delimiter"]
         delimiter = delimiter + " " if !skipinitialspace
+        skipblanks = dialect["skip_blanks"] || false
         return {
             :col_sep => delimiter,
             :row_sep => dialect["lineTerminator"],
             :quote_char => dialect["quoteChar"],
-            :skip_blanks => false
+            :skip_blanks => skipblanks
         }
     end
     

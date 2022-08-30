@@ -100,7 +100,7 @@ module Csvlint
 
       begin
         wrapper = WrappedIO.new( io )
-        csv = CSV.new( wrapper, @csv_options )
+        csv = CSV.new( wrapper, **@csv_options )
         @data = []
         @line_breaks = csv.row_sep
         if @line_breaks != "\r\n"

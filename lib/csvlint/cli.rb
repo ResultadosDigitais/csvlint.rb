@@ -39,7 +39,11 @@ module Csvlint
         # If no source is present, try reading from stdin
         if !$stdin.tty?
           source = begin
-            StringIO.new($stdin.read)
+            data = $stdin.read
+            # StringIO.new(nil) used to raise, but from Ruby 3.4 it builds a
+            # stream that reads as nil, so check the data rather than relying
+            # on an exception to detect empty stdin.
+            StringIO.new(data) unless data.nil? || data.empty?
           rescue
             nil
           end

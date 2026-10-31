@@ -66,12 +66,12 @@ Feature: Validation warnings
     Then there should be 1 warnings
     And that warning should have the type "no_encoding"
 
-  Scenario: Title rows
+  Scenario: Title rows produce column name warnings
     Given I have a CSV file called "title-row.csv"
     And it is stored at the url "http://example.com/example1.csv"
     And I ask if there are warnings
-    Then there should be 1 warnings
-    And that warning should have the type "title_row"
+    Then there should be 3 warnings
+    And that warning should have the type "empty_column_name"
 
   Scenario: catch excel warnings
     Given I parse a file called "spreadsheet.xls"

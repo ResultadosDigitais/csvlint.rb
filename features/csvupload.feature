@@ -1,11 +1,11 @@
 Feature: Collect all the tests that should trigger dialect check related errors
 
-  Scenario: Title rows, I wish to trigger a :title_row type message
+  Scenario: Title rows produce column name warnings
     Given I have a CSV file called "title-row.csv"
     And it is stored at the url "http://example.com/example1.csv"
     And I ask if there are warnings
-    Then there should be 1 warnings
-    And that warning should have the type "title_row"
+    Then there should be 3 warnings
+    And that warning should have the type "empty_column_name"
 
 #    :nonrfc_line_breaks
 
@@ -84,7 +84,7 @@ Feature: Collect all the tests that should trigger dialect check related errors
 
 #  :blank_rows
 
-  Scenario: Successfully report a CSV with blank rows
+  Scenario: Rows of empty values are not reported as blank rows
     Given I have a CSV with the following content:
     """
 "col1","col2","col3"
@@ -94,10 +94,7 @@ Feature: Collect all the tests that should trigger dialect check related errors
     """
     And it is stored at the url "http://example.com/example1.csv"
     When I ask if there are errors
-    Then there should be 1 error
-    And that error should have the type "blank_rows"
-    And that error should have the row "3"
-    And that error should have the content ""","","
+    Then there should be 0 error
 
   Scenario: Successfully report a CSV with multiple trailing empty rows
     Given I have a CSV with the following content:

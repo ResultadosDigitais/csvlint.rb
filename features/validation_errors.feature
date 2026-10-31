@@ -40,7 +40,7 @@ Feature: Get validation errors
     And that error should have the row "2"
     And that error should have the content ""Foo","Bar",   "Baz""
 
-  Scenario: Successfully report a CSV with blank rows
+  Scenario: Rows of empty values are not reported as blank rows
     Given I have a CSV with the following content:
     """
 "col1","col2","col3"
@@ -50,10 +50,7 @@ Feature: Get validation errors
     """
     And it is stored at the url "http://example.com/example1.csv"
     When I ask if there are errors
-    Then there should be 1 error
-    And that error should have the type "blank_rows"
-    And that error should have the row "3"
-    And that error should have the content ""","","
+    Then there should be 0 error
 
   Scenario: Successfully report a CSV with multiple trailing empty rows
     Given I have a CSV with the following content:

@@ -1,4 +1,4 @@
-FROM ruby:2.5.8-buster
+FROM ruby:3.4.8
 
 # throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1

@@ -1,7 +1,7 @@
 # Note that these commands are specific for a docker environment on MS Windows.
 
 # to generate Gemfile.lock file
-docker run --rm -v %CD%:/usr/src/app -w /usr/src/app ruby:2.5 bundle install
+docker run --rm -v %CD%:/usr/src/app -w /usr/src/app ruby:3.4 bundle install
 
 # to build docker image from source (the ending dot is significant)
 docker build -t csvlint .

@@ -1,10 +1,25 @@
 require "aruba"
 require "aruba/cucumber"
+require "stringio"
 
 require "csvlint/cli"
 
 module Csvlint
+  # Stands in for an empty stdin. The CLI treats a nil read as "no CSV data to
+  # validate", which an empty StringIO (whose read returns "") would not.
+  class EmptyStdin < StringIO
+    def read(*)
+      nil
+    end
+  end
+
   class CliRunner
+    # Aruba's in-process launcher passes its own StringIO as stdin, so stubbing
+    # $stdin from a step never reaches the command. Steps set this instead.
+    class << self
+      attr_accessor :stdin_override
+    end
+
     # Allow everything fun to be injected from the outside while defaulting to normal implementations.
     def initialize(argv, stdin = $stdin, stdout = $stdout, stderr = $stderr, kernel = Kernel)
       @argv, @stdin, @stdout, @stderr, @kernel = argv, stdin, stdout, stderr, kernel
@@ -14,7 +29,7 @@ module Csvlint
       exit_code = begin
         # Thor accesses these streams directly rather than letting them be injected, so we replace them...
         $stderr = @stderr
-        $stdin = @stdin
+        $stdin = self.class.stdin_override || @stdin
         $stdout = @stdout
 
         # Run our normal Thor app the way we know and love.
@@ -43,6 +58,7 @@ module Csvlint
         $stderr = STDERR
         $stdin = STDIN
         $stdout = STDOUT
+        self.class.stdin_override = nil
       end
 
       # Proxy our exit code back to the injected kernel.

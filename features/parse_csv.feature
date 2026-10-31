@@ -73,7 +73,7 @@ too"
     When I ask if the CSV is valid
     Then I should get the value of false
 
-    Scenario: Don't class blank values as inconsistencies
+    Scenario: Blank values are treated as an inconsistent type within a column
      Given I have a CSV with the following content:
      """
 "col1","col2","col3"
@@ -87,4 +87,5 @@ too"
      """
      And it is stored at the url "http://example.com/example1.csv"
      When I ask if there are warnings
-     Then there should be 0 warnings
+     Then there should be 1 warnings
+     And that warning should have the type "inconsistent_values"
